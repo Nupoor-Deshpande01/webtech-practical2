@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Pro | JavaScript JSON & Array Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                    <h1 class="logo-title">TaskFlow <span>Pro</span></h1>
+                    <p class="logo-subtitle">JavaScript Array & JSON Data Management System</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="btnExportJson" class="btn btn-secondary" title="Export current array to JSON file">
+                    <i class="fa-solid fa-file-export"></i> Export JSON
+                </button>
+                <label for="jsonFileInput" class="btn btn-secondary btn-file" title="Import tasks from JSON file">
+                    <i class="fa-solid fa-file-import"></i> Import JSON
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                </label>
+                <button id="btnOpenAddModal" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> New Task
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Overview Cards -->
+        <section class="stats-grid">
+            <div class="stat-card" data-stat="total">
+                <div class="stat-info">
+                    <span class="stat-label">Total Tasks</span>
+                    <h3 id="statTotal" class="stat-value">0</h3>
+                </div>
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+            </div>
+
+            <div class="stat-card" data-stat="pending">
+                <div class="stat-info">
+                    <span class="stat-label">Pending</span>
+                    <h3 id="statPending" class="stat-value">0</h3>
+                </div>
+                <div class="stat-icon icon-amber">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+
+            <div class="stat-card" data-stat="in-progress">
+                <div class="stat-info">
+                    <span class="stat-label">In Progress</span>
+                    <h3 id="statInProgress" class="stat-value">0</h3>
+                </div>
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+            </div>
+
+            <div class="stat-card" data-stat="completed">
+                <div class="stat-info">
+                    <span class="stat-label">Completed</span>
+                    <h3 id="statCompleted" class="stat-value">0</h3>
+                </div>
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls Toolbar -->
+        <section class="toolbar-section">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search tasks by title, tag or description...">
+                <button id="btnClearSearch" class="btn-clear-search" style="display: none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="filters-group">
+                <div class="filter-item">
+                    <label for="filterCategory"><i class="fa-solid fa-tag"></i></label>
+                    <select id="filterCategory">
+                        <option value="ALL">All Categories</option>
+                        <option value="Work">Work</option>
+                        <option value="Study">Study</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Health">Health</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="filterPriority"><i class="fa-solid fa-flag"></i></label>
+                    <select id="filterPriority">
+                        <option value="ALL">All Priorities</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="filterStatus"><i class="fa-solid fa-bars-progress"></i></label>
+                    <select id="filterStatus">
+                        <option value="ALL">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="sortBy"><i class="fa-solid fa-arrow-down-short-wide"></i></label>
+                    <select id="sortBy">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="due-asc">Due Date (Earliest)</option>
+                        <option value="due-desc">Due Date (Latest)</option>
+                        <option value="priority-desc">Priority (High to Low)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                    </select>
+                </div>
+
+                <button id="btnResetFilters" class="btn btn-ghost" title="Reset all filters">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Task Board & Array View Grid -->
+        <main class="main-content-layout">
+            <!-- Tasks List / Card Grid -->
+            <section class="tasks-container">
+                <div class="section-heading-bar">
+                    <div class="heading-left">
+                        <h2>Active Tasks</h2>
+                        <span id="taskCountBadge" class="badge badge-pill">0 tasks</span>
+                    </div>
+                    <div class="view-toggle-btns">
+                        <button id="btnViewGrid" class="view-btn active" title="Grid View">
+                            <i class="fa-solid fa-grip"></i>
+                        </button>
+                        <button id="btnViewList" class="view-btn" title="List View">
+                            <i class="fa-solid fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-clipboard-question"></i>
+                    </div>
+                    <h3>No tasks found</h3>
+                    <p>No tasks matched your current filter criteria or your task list is empty.</p>
+                    <button id="btnEmptyAddTask" class="btn btn-primary mt-3">
+                        <i class="fa-solid fa-plus"></i> Create New Task
+                    </button>
+                </div>
+
+                <!-- Grid of Task Cards -->
+                <div id="tasksGrid" class="tasks-grid view-grid-mode">
+                    <!-- Dynamic task cards inserted here by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Real-time JSON Data Inspector Panel -->
+            <aside class="json-inspector-panel">
+                <div class="inspector-header">
+                    <div class="inspector-title">
+                        <i class="fa-solid fa-code"></i>
+                        <h3>Live JSON Store</h3>
+                    </div>
+                    <button id="btnCopyJson" class="btn-icon" title="Copy raw JSON">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+                <div class="inspector-meta">
+                    <span>Array length: <strong id="arrayLengthCount">0</strong> items</span>
+                    <span>State: <strong class="text-emerald">Validated & Synced</strong></span>
+                </div>
+                <pre id="jsonLiveViewer" class="json-code-block"><code>[]</code></pre>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Task Modal (Create / Edit) with Strict Validation -->
+    <div id="taskModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon">
+                        <i id="modalIcon" class="fa-solid fa-file-pen"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle">Create New Task</h3>
+                        <p class="modal-subtitle">All fields are rigorously validated before storage in the JSON array.</p>
+                    </div>
+                </div>
+                <button id="btnCloseModal" class="btn-close-modal" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="taskForm" novalidate>
+                <input type="hidden" id="taskId">
+
+                <!-- Global Form Alert Message Box -->
+                <div id="formGlobalError" class="form-global-alert" style="display: none;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="formGlobalErrorText">Please resolve the validation errors below before saving.</span>
+                </div>
+
+                <!-- Task Title -->
+                <div class="form-group">
+                    <label for="taskTitle" class="form-label">
+                        Task Title <span class="required-star">*</span>
+                    </label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-heading input-icon"></i>
+                        <input type="text" id="taskTitle" class="form-control" placeholder="e.g., Implement OAuth2 Authentication" maxlength="70" required autocomplete="off">
+                    </div>
+                    <div class="field-feedback" id="titleError"></div>
+                    <small class="field-hint">Length must be between 3 and 60 characters.</small>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="taskDescription" class="form-label">
+                        Description <span class="required-star">*</span>
+                    </label>
+                    <textarea id="taskDescription" class="form-control textarea-control" rows="3" placeholder="Provide clear task details, requirements, or deliverables..." required></textarea>
+                    <div class="field-feedback" id="descriptionError"></div>
+                    <small class="field-hint">Must contain at least 10 characters.</small>
+                </div>
+
+                <!-- Two-Column Row: Category & Priority -->
+                <div class="form-row">
+                    <div class="form-group col-half">
+                        <label for="taskCategory" class="form-label">
+                            Category <span class="required-star">*</span>
+                        </label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-folder input-icon"></i>
+                            <select id="taskCategory" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <option value="Work">Work</option>
+                                <option value="Study">Study</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Health">Health</option>
+                            </select>
+                        </div>
+                        <div class="field-feedback" id="categoryError"></div>
+                    </div>
+
+                    <div class="form-group col-half">
+                        <label for="taskPriority" class="form-label">
+                            Priority <span class="required-star">*</span>
+                        </label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-flag input-icon"></i>
+                            <select id="taskPriority" class="form-control" required>
+                                <option value="">Select Priority</option>
+                                <option value="Urgent">Urgent</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="field-feedback" id="priorityError"></div>
+                    </div>
+                </div>
+
+                <!-- Two-Column Row: Due Date & Estimated Hours -->
+                <div class="form-row">
+                    <div class="form-group col-half">
+                        <label for="taskDueDate" class="form-label">
+                            Due Date <span class="required-star">*</span>
+                        </label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-calendar-days input-icon"></i>
+                            <input type="date" id="taskDueDate" class="form-control" required>
+                        </div>
+                        <div class="field-feedback" id="dueDateError"></div>
+                        <small class="field-hint">Cannot be in the past.</small>
+                    </div>
+
+                    <div class="form-group col-half">
+                        <label for="taskHours" class="form-label">
+                            Estimated Effort (Hours) <span class="required-star">*</span>
+                        </label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-stopwatch input-icon"></i>
+                            <input type="number" id="taskHours" class="form-control" placeholder="e.g., 4.5" step="0.5" min="0.5" max="100" required>
+                        </div>
+                        <div class="field-feedback" id="hoursError"></div>
+                        <small class="field-hint">Range: 0.5 to 100 hrs.</small>
+                    </div>
+                </div>
+
+                <!-- Status Selector -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Task Status <span class="required-star">*</span>
+                    </label>
+                    <div class="status-radio-group">
+                        <label class="radio-card">
+                            <input type="radio" name="taskStatus" value="Pending" checked>
+                            <span class="radio-content">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>Pending</span>
+                            </span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="taskStatus" value="In Progress">
+                            <span class="radio-content">
+                                <i class="fa-solid fa-spinner"></i>
+                                <span>In Progress</span>
+                            </span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="taskStatus" value="Completed">
+                            <span class="radio-content">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Completed</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Modal Footer Actions -->
+                <div class="modal-footer">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" id="btnSaveTask" class="btn btn-primary">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Save Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="confirm-content">
+                <div class="confirm-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3>Delete Task?</h3>
+                <p id="confirmDeleteMessage">Are you sure you want to remove this task from the JSON storage array? This action cannot be undone.</p>
+                <div class="confirm-actions">
+                    <button id="btnCancelDelete" class="btn btn-secondary">Cancel</button>
+                    <button id="btnConfirmDelete" class="btn btn-danger">
+                        <i class="fa-solid fa-trash-can"></i> Confirm Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
